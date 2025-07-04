@@ -1,29 +1,39 @@
+import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+
 import fetchMovies from '../../services/movieService';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import Loader from '../Loader/Loader';
+import MovieGrid from '../MovieGrid/MovieGrid';
 import SearchBar from '../SearchBar/SearchBar';
+
+import type { Movie } from '../../types/movie';
 import css from './App.module.css';
 
 export default function App() {
-  // const [articles, setArticles] = useState<Article[]>([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [isError, setIsError] = useState(false);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const handleSearch = async (query: string) => {
     try {
-      // setIsLoading(true);
-      // setIsError(false);
-      // 2. Використовуємо HTTP-функцію
+      setMovies([]);
+      setIsLoading(true);
+      setIsError(false);
+
       const data = await fetchMovies(query);
       console.log(data);
-      if (data.movies.length === 0) {
+      if (data.length === 0) {
         toast.error('No movies found for your request.');
         return;
       }
-      // setArticles(data);
+      setMovies(data);
+
     } catch {
-      // setIsError(true);
+      setIsError(true);
+      
     } finally {
-      // setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -31,6 +41,9 @@ export default function App() {
     <div className={css.app}>
       <Toaster position="top-center" reverseOrder={false} />
       <SearchBar onSubmit={handleSearch} />
+      {isLoading && <Loader />}
+      {isError && <ErrorMessage />}
+      {movies.length > 0 && <MovieGrid movies={movies} />}
     </div>
   );
 }
