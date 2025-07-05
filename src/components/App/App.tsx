@@ -5,6 +5,7 @@ import fetchMovies from '../../services/movieService';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import Loader from '../Loader/Loader';
 import MovieGrid from '../MovieGrid/MovieGrid';
+import MovieModal from '../MovieModal/MovieModal';
 import SearchBar from '../SearchBar/SearchBar';
 
 import type { Movie } from '../../types/movie';
@@ -12,6 +13,8 @@ import css from './App.module.css';
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -28,13 +31,21 @@ export default function App() {
         return;
       }
       setMovies(data);
-
     } catch {
       setIsError(true);
-      
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const openModal = (id: number) => {
+    setSelectedMovieId(id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMovieId(null);
   };
 
   return (
@@ -43,7 +54,13 @@ export default function App() {
       <SearchBar onSubmit={handleSearch} />
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
-      {movies.length > 0 && <MovieGrid movies={movies} />}
+      {movies.length > 0 && <MovieGrid movies={movies} onSelect={openModal} />}
+      {isModalOpen && (
+        <MovieModal
+          movie={movies.find(movie => movie.id === selectedMovieId)!}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }
