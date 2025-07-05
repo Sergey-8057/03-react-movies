@@ -48,6 +48,10 @@ export default function App() {
     setSelectedMovieId(null);
   };
 
+  const findMovie = () => {
+    return movies.find(movie => movie.id === selectedMovieId) as Movie;
+  }
+
   return (
     <div className={css.app}>
       <Toaster position="top-center" reverseOrder={false} />
@@ -55,12 +59,7 @@ export default function App() {
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
       {movies.length > 0 && <MovieGrid movies={movies} onSelect={openModal} />}
-      {isModalOpen && (
-        <MovieModal
-          movie={movies.find(movie => movie.id === selectedMovieId)!}
-          onClose={closeModal}
-        />
-      )}
+      {isModalOpen && <MovieModal movie={findMovie()} onClose={closeModal} />}
     </div>
   );
 }
