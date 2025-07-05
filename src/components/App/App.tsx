@@ -13,7 +13,7 @@ import css from './App.module.css';
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -38,19 +38,15 @@ export default function App() {
     }
   };
 
-  const openModal = (id: number) => {
-    setSelectedMovieId(id);
+  const openModal = (movie: Movie) => {
+    setSelectedMovie(movie);
     setIsModalOpen(true);
-  };
+  };  
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedMovieId(null);
+    setSelectedMovie(null);
   };
-
-  const findMovie = () => {
-    return movies.find(movie => movie.id === selectedMovieId) as Movie;
-  }
 
   return (
     <div className={css.app}>
@@ -59,7 +55,7 @@ export default function App() {
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
       {movies.length > 0 && <MovieGrid movies={movies} onSelect={openModal} />}
-      {isModalOpen && <MovieModal movie={findMovie()} onClose={closeModal} />}
+      {isModalOpen && selectedMovie && <MovieModal movie={selectedMovie} onClose={closeModal} />}
     </div>
   );
 }
